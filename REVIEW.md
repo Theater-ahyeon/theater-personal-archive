@@ -49,3 +49,13 @@ Only `theater-personal-archive`. Existing content, user assets, and the independ
 - Narrow-screen music controls now default to a 49px transport strip with always-reachable play/pause and a labeled volume summary. Volume settings expand explicitly; 0% displays 静音 even when collapsed. Desktop controls remain expanded.
 - Escape closes settings and restores focus. Breakpoint changes reveal the destination before moving focus, then hide the obsolete control, avoiding loss of keyboard focus.
 - Native checks at 333px/500px verified compact height, expansion, keyboard mute, Escape, exclusion of collapsed slider from Tab order and unobscured footer links. Both 500→1180 and 1180→500 focus-transfer directions passed with no playback activation. Deterministic DOM tests cover both directions.
+
+## Extended reliability and fallback pass
+
+- A native-browser instrumented copy of release 1708cec ran muted music and hero animation for about 46 minutes. Live counts stayed bounded: one audio context, 24–26 nodes, one scheduler timeout and one rAF; 81,910 additional hero draws over 2,730 seconds corresponds to about 30fps. No app errors were recorded.
+- Explicit pause plus motion-off reduced all tracked contexts, nodes, timeouts and rAF callbacks to zero. Heap naturally fell from a transient 8.72MB to 2.50MB, below the 2.57MB initial sample, without forced garbage collection. This run showed no retained growth; diagnostic instrumentation was present, so this is not a universal memory guarantee.
+- The public site also remained responsive after approximately 47 minutes of muted playback: repeated search reset/focus, project selection and article/Back navigation worked, and navigation returned audio paused. Extension-origin errors were excluded from application-error conclusions.
+- Isolated HTML fixtures simulated unavailable local/session storage, absent AudioContext and null canvas contexts. Readable content, opening dismissal, search and motion-off continued to work; unsupported audio showed disabled controls and an explicit message. These are fallback-branch tests, not certification of every browser/device.
+- Reloading #work-2 selected only Harness. Resize during opening or article navigation settled without leftover inert state, scrolling lock or clipping.
+- Restored skip-to-content as the first focusable shell element, ahead of the global player. Native address-bar→Tab→Enter checks on home/article bypassed player/navigation and placed subsequent keyboard navigation in main content.
+- Production checks on home, archive and both deep article URLs returned 200 and one shared asset version. All eight runtime CSS/JS responses matched the reviewed source hashes.

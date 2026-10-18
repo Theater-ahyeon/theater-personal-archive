@@ -29,6 +29,7 @@ for (const page of pages.filter(page => !page.startsWith('assets/'))) {
   for (const id of ['archive-music', 'music-toggle', 'music-volume', 'music-status', 'intro-phase']) {
     assert.equal((html.match(new RegExp(`id="${id}"`, 'g')) || []).length, 1, `${page}: ${id} should exist exactly once`);
   }
+  assert(html.indexOf('class="skip-link"') < html.indexOf('id="archive-music"'), `${page}: skip link precedes player controls in keyboard order`);
   assert.match(html, /id="archive-music"[^>]*hidden/, `${page}: music must be progressive enhancement`);
   assert.match(html, /id="music-toggle"[^>]*aria-pressed="false"/, `${page}: music starts paused`);
   assert.match(html, /assets\/soundtrack\.js\?v=/, `${page}: soundtrack cache version`);

@@ -68,6 +68,7 @@ function shell(title, content, { prefix = './', page = 'home', description = sit
 <body data-page="${page}">
   ${intro()}
   <div id="site-shell">
+    <a class="skip-link" href="#main">跳到正文</a>
     <div class="reading-progress" aria-hidden="true"><span></span></div>
     <div id="archive-music" class="archive-music" hidden>
       <div class="music-track"><span class="music-disc" aria-hidden="true">✧</span><span>TIDAL ARCHIVE<small>THEATER / ORIGINAL AMBIENT</small></span></div>
@@ -79,7 +80,6 @@ function shell(title, content, { prefix = './', page = 'home', description = sit
       <p id="music-status" role="status" aria-live="polite">原创合成 · 点击播放</p>
       </div>
     </div>
-    <a class="skip-link" href="#main">跳到正文</a>
     <button id="sidebar-shade" hidden tabindex="-1" aria-label="关闭导航"></button>
     <aside id="sidebar" class="sidebar" aria-label="个人档案导航">
       <button id="sidebar-close" type="button" aria-label="关闭导航"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>

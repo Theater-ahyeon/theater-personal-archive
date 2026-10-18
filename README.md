@@ -22,6 +22,8 @@ npm run preview
 - `public/archive-v10.css`：完整布局、定制组件、阅读排版和响应式。
 - `public/archive-v10.js`：三维投影几何开场、前后图形层、视差和章节动画。
 - `public/app.js`：项目/锚点、移动导航、开场跳过与焦点。
+- `public/experience.js` 与 `public/experience.css`：章节几何仪器、指针局部光、阅读进度和常驻音乐控制。
+- `public/soundtrack.js`：原创氛围配乐，完全本地合成、无下载音轨或自动播放。
 - `public/terminal.js`：本地搜索、键盘、动效偏好、默认静音的合成音效与时钟。
 - `public/v10/`：新生成背景、透明主体、透明边框和原生纸面纹理。
 - `public/fonts/`：本地 Bodoni Moda、Noto Serif SC 及各自 OFL。中文为当前内容子集，新增字可重新生成或回退系统宋体，见 `artifacts/redesign-v10/fonts.md`。
@@ -30,7 +32,7 @@ npm run preview
 
 ## 交互
 
-4.4 秒开场支持跳过、Escape、重播及会话记忆。默认遵循系统减少动态；点击“播放序章”可明确为本站开启完整动效。关闭后保留静态图形和全部内容，音效默认关闭。
+4.4 秒开场支持跳过、Escape、重播及会话记忆。默认遵循系统减少动态；点击“播放序章”可明确为本站开启完整动效。关闭后保留静态图形和全部内容，音效默认关闭。新增独立背景音乐 TIDAL ARCHIVE 为本地原创合成，点击后播放，可暂停与调节音量；离开页面即暂停，返回不会自动恢复。
 
 项目支持鼠标、方向键、Home/End及首屏深链接；Ctrl/Cmd+K搜索支持命中、无结果、上下键、Enter和一次Escape关闭。手机抽屉管理焦点、遮罩、滚动及inert。无JavaScript仍可导航、顺序查看项目和阅读文章。没有后台、登录、评论或访问追踪。
 
@@ -55,3 +57,7 @@ v10概念图、海景、悬挂物和侧栏由内置image_gen生成，源PNG和�
 `npm test`检查五个页面的资源、标题和锚点。真实浏览器功能、动效、尺寸与截图记录在 `artifacts/redesign-v10/`；研究页验证单独保存，不能互相替代。旧版备份在 `artifacts/before-homepage-v10/`。
 
 独立源码仓库：[theater-personal-archive](https://github.com/Theater-ahyeon/theater-personal-archive)。GitHub Pages 工作流在推送 main 后构建、检查并发布，站点地址为 https://theater-ahyeon.github.io/theater-personal-archive/ 。原个人主页仓库独立保留。artifacts、node_modules、日志与研究截图不提交；本文中的 artifacts 路径指本地研究记录。
+
+## 体验增强检查
+
+本轮改动与验证边界见 [REVIEW.md](./REVIEW.md)。`npm test` 同时运行音频生命周期模拟测试；模拟测试不替代真实浏览器布局或实际听感评估。

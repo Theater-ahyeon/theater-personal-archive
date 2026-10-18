@@ -24,3 +24,13 @@ for (const page of pages) {
 }
 assert.match(readFileSync(resolve(root, 'assets/app.js'), 'utf8'), /prefers-reduced-motion/);
 console.log(`PASS: ${pages.length} 个页面，全部站内链接、资源、锚点与标题检查通过。`);
+for (const page of pages.filter(page => !page.startsWith('assets/'))) {
+  const html = readFileSync(resolve(root, page), 'utf8');
+  for (const id of ['archive-music', 'music-toggle', 'music-volume', 'music-status', 'intro-phase']) {
+    assert.equal((html.match(new RegExp(`id="${id}"`, 'g')) || []).length, 1, `${page}: ${id} should exist exactly once`);
+  }
+  assert.match(html, /id="archive-music"[^>]*hidden/, `${page}: music must be progressive enhancement`);
+  assert.match(html, /id="music-toggle"[^>]*aria-pressed="false"/, `${page}: music starts paused`);
+  assert.match(html, /assets\/soundtrack\.js\?v=/, `${page}: soundtrack cache version`);
+}
+console.log('PASS: progressive music controls and opening phase labels on every archive page.');

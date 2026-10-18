@@ -12,10 +12,20 @@
   const shade = document.querySelector('#sidebar-shade');
   const mobile = matchMedia('(max-width: 900px)');
   let menuOpen = false, menuOverflow;
+  const menuBackground = [...document.querySelectorAll('#main, .footer, .section-rail, .reading-progress, #archive-music, .topbar > :not(#menu-toggle)')];
+  const menuInert = new Map();
+  function isolateMenu(enabled) {
+    for (const node of menuBackground) {
+      if (enabled) { menuInert.set(node, node.inert); node.inert = true; }
+      else if (menuInert.has(node)) { node.inert = menuInert.get(node); menuInert.delete(node); }
+    }
+  }
   function closeSidebar(restoreFocus = true) {
     if (!menuToggle || !sidebar || !shade) return;
     const wasOpen = menuOpen;
     menuOpen = false;
+    menuToggle.inert = false;
+    isolateMenu(false);
     sidebar.classList.remove('is-open');
     sidebar.inert = mobile.matches;
     shade.hidden = true;
@@ -32,6 +42,8 @@
       if (!mobile.matches || active) return;
       menuOverflow = document.documentElement.style.overflow;
       menuOpen = true;
+      menuToggle.inert = true;
+      isolateMenu(true);
       sidebar.inert = false;
       sidebar.classList.add('is-open');
       shade.hidden = false;
@@ -41,6 +53,7 @@
       sidebar.querySelector('a[href]')?.focus({ preventScroll: true });
     });
     shade.addEventListener('click', () => closeSidebar());
+    document.querySelector('#sidebar-close')?.addEventListener('click', () => closeSidebar());
     document.addEventListener('click', (event) => {
       const link = event.target.closest?.('a[href]');
       if (!menuOpen || !link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -56,7 +69,7 @@
       if (!menuOpen || event.target.closest?.('dialog[open]')) return;
       if (event.key === 'Escape') { event.preventDefault(); closeSidebar(); return; }
       if (event.key !== 'Tab') return;
-      const items = [menuToggle, ...sidebar.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      const items = [...sidebar.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
         .filter((node) => node.getClientRects().length && !node.closest('[hidden], [inert]'));
       const current = items.indexOf(document.activeElement);
       const next = current < 0 ? (event.shiftKey ? items.length - 1 : 0)
@@ -125,7 +138,7 @@
   document.querySelector('#experience-intro')?.addEventListener('click', openIntro);
   window.addEventListener('pagehide', closeIntro);
   intro?.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') { event.preventDefault(); closeIntro(); }
+    if (event.key === 'Escape' || event.key === 'Enter') { event.preventDefault(); closeIntro(); }
     if (event.key === 'Tab') { event.preventDefault(); skip?.focus(); }
   });
   function syncMotion() {

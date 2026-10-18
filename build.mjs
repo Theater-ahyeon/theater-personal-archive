@@ -8,7 +8,7 @@ const root = fileURLToPath(new URL('.', import.meta.url));
 const output = resolve(root, 'dist');
 const site = JSON.parse(readFileSync(join(root, 'site.json'), 'utf8'));
 const assetHash = createHash('sha256');
-for (const file of ['archive-v10.css', 'terminal.js', 'app.js', 'archive-v10.js']) assetHash.update(readFileSync(join(root, 'public', file)));
+for (const file of ['archive-v10.css', 'terminal.js', 'app.js', 'archive-v10.js', 'experience.js', 'experience.css', 'soundtrack.js']) assetHash.update(readFileSync(join(root, 'public', file)));
 const assetVersion = assetHash.digest('hex').slice(0, 10);
 const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const external = value => {
@@ -27,7 +27,7 @@ const posts = site.posts.map(post => {
   return { ...post, html: marked.parse(source), minutes: Math.max(1, Math.ceil(source.length / 500)) };
 }).sort((a, b) => b.date.localeCompare(a.date));
 const number = value => String(value).padStart(2, '0');
-const arrow = '<span aria-hidden="true">↗</span>';
+const arrow = '<span class="link-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 19 19 5M5 5h14v14"/></svg></span>';
 const sections = [['about', 'INDEX', '首页'], ['projects', 'WORKS', '项目'], ['journal', 'NOTES', '手记'], ['profile', 'PROFILE', '关于']];
 const mark = '<svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M5 7h30v6H23v23h-6V13H5zM29 20h6v16h-6zM5 20h6v16H5z" fill="currentColor"/></svg>';
 
@@ -38,6 +38,7 @@ function intro() {
       <div class="intro-corners"><span>THEATER / PERSONAL ARCHIVE</span><span>CODE · PROJECTS · NOTES</span><span>记录，让探索继续。</span><span id="intro-percent">00</span></div>
     </div>
     <div class="intro-aperture" aria-hidden="true">${Array.from({ length: 8 }, (_, index) => `<i style="--i:${index}"></i>`).join('')}</div>
+    <div class="intro-stage-label" aria-hidden="true"><span id="intro-phase">ASSEMBLE / 结构显影</span><span>序章 · 01</span></div>
     <div class="intro-progress" aria-hidden="true"><span></span></div>
     <button id="skip-intro">跳过开场 <span aria-hidden="true">↗</span></button>
   </div>`;
@@ -56,6 +57,9 @@ function shell(title, content, { prefix = './', page = 'home', description = sit
   <link rel="preload" href="${prefix}assets/fonts/bodoni-moda.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="${prefix}assets/fonts/noto-serif-sc.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="${prefix}assets/archive-v10.css?v=${assetVersion}">
+  <link rel="stylesheet" href="${prefix}assets/experience.css?v=${assetVersion}">
+  <script src="${prefix}assets/experience.js?v=${assetVersion}" defer></script>
+  <script src="${prefix}assets/soundtrack.js?v=${assetVersion}" defer></script>
   <script src="${prefix}assets/terminal.js?v=${assetVersion}" defer></script>
   <script src="${prefix}assets/app.js?v=${assetVersion}" defer></script>
   <script src="${prefix}assets/archive-v10.js?v=${assetVersion}" defer></script>
@@ -63,9 +67,18 @@ function shell(title, content, { prefix = './', page = 'home', description = sit
 <body data-page="${page}">
   ${intro()}
   <div id="site-shell">
+    <div class="reading-progress" aria-hidden="true"><span></span></div>
+    <div id="archive-music" class="archive-music" hidden>
+      <div class="music-track"><span class="music-disc" aria-hidden="true">✧</span><span>TIDAL ARCHIVE<small>THEATER / ORIGINAL AMBIENT</small></span></div>
+      <button id="music-toggle" type="button" aria-pressed="false" aria-label="背景音乐" aria-describedby="music-status"><span aria-hidden="true">♫</span><span id="music-label">播放氛围音乐</span></button>
+      <label class="music-volume-label" for="music-volume">音量 <span id="music-volume-value">35%</span></label>
+      <input id="music-volume" type="range" min="0" max="100" value="35" step="1" aria-label="背景音乐音量">
+      <p id="music-status" role="status" aria-live="polite">原创合成 · 点击播放</p>
+    </div>
     <a class="skip-link" href="#main">跳到正文</a>
     <button id="sidebar-shade" hidden tabindex="-1" aria-label="关闭导航"></button>
     <aside id="sidebar" class="sidebar" aria-label="个人档案导航">
+      <button id="sidebar-close" type="button" aria-label="关闭导航"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
       <a class="brand" href="${prefix}index.html" aria-label="theater 首页">${mark}<span>THEATER<small>PERSONAL ARCHIVE</small></span></a>
       <p class="brand-caption" aria-hidden="true">CODE<br>BUILDS<br>MEMORIES</p>
       <nav class="main-nav" aria-label="主导航">

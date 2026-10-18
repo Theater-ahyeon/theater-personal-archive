@@ -6,8 +6,15 @@
   "scripts": {
     "build": "node build.mjs",
     "preview": "node preview.mjs",
-    "test": "node check.mjs"
+    "test": "node check.mjs && node tests/soundtrack.cjs && node tests/motion.cjs && node tests/dom.cjs"
   },
-  "engines": { "node": ">=22" },
-  "dependencies": { "marked": "18.0.14" }
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "marked": "18.0.14"
+  },
+  "devDependencies": {
+    "jsdom": "26.1.0"
+  }
 }

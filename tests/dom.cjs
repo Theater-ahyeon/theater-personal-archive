@@ -1,0 +1,36 @@
+const {JSDOM}=require('jsdom');
+const fs=require('fs'), assert=require('assert/strict');
+function setup(mobile, reduced){
+ const dom=new JSDOM(fs.readFileSync('dist/index.html','utf8'),{url:'https://example.com/',runScripts:'outside-only',pretendToBeVisual:true});
+ const w=dom.window;
+ w.matchMedia=q=>({matches:q.includes('max-width')?mobile:q.includes('reduced')?reduced:true,addEventListener(){}});
+ w.HTMLElement.prototype.getClientRects=function(){return this.hidden?[]:[{width:100,height:30}]};
+ w.HTMLElement.prototype.scrollIntoView=function(){};
+ w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false};
+ for(const p of ['terminal.js','app.js','experience.js'])w.eval(fs.readFileSync('public/'+p,'utf8'));
+ return dom;
+}
+for(const reduced of [false,true]){
+ const dom=setup(true,reduced), w=dom.window,d=w.document;
+ d.querySelector('#skip-intro').click();
+ assert.equal(d.querySelector('#intro').hidden,true);
+ d.querySelector('#menu-toggle').click();
+ assert.equal(d.querySelector('#menu-toggle').inert,true);
+ d.querySelector('#sidebar-close').click();
+ assert.equal(d.querySelector('#menu-toggle').inert,false);
+ assert.equal(d.querySelector('#sidebar').inert,true);
+ d.querySelector('#menu-toggle').click();
+ for(const q of ['#main','.footer','#archive-music','.command-trigger'])assert.equal(d.querySelector(q).inert,true,q);
+ d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ assert.equal(d.querySelector('#main').inert,undefined);assert.equal(d.querySelector('#sidebar').inert,true);
+ const tabs=d.querySelectorAll('.project-tabs a');tabs[1].click();assert.equal(d.querySelector('#work-1').hidden,false);assert.equal(d.querySelector('#work-0').hidden,true);
+ tabs[1].dispatchEvent(new w.KeyboardEvent('keydown',{key:'End',bubbles:true}));assert.equal(d.querySelector('#work-2').hidden,false);
+ d.querySelector('.command-trigger').click();assert.equal(d.querySelector('#command-dialog').open,true);
+ const input=d.querySelector('#command-input');input.value='notpresent';input.dispatchEvent(new w.Event('input'));assert.equal(d.querySelector('#command-empty').hidden,false);
+ d.querySelector('#command-dialog').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));assert.equal(d.querySelector('#command-dialog').open,false);
+ if(reduced)assert.equal(d.documentElement.dataset.effects,'off');
+ d.querySelector('#experience-intro').click();assert.equal(d.querySelector('#intro').hidden,false);
+ d.querySelector('#intro').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));assert.equal(d.querySelector('#intro').hidden,true);
+ assert.equal(d.querySelectorAll('.chapter-instrument').length,3);dom.window.close();
+}
+console.log('PASS DOM states: mobile inert restoration, Escape, intro Enter/replay, reduced override, keyboard project switching, search empty/dismiss, instruments. Layout/audio rendering not tested.');

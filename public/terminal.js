@@ -11,7 +11,7 @@
   const magnets = [...document.querySelectorAll('[data-magnetic]')];
   const storageKey = 'theater-effects';
   let preference = 'on', effects = false, frame = 0, timer = 0, pageActive = true;
-  let activeTilt, activeMagnet, pointer, audio, sound = false, lastClick = 0;
+  let activeTilt, activeMagnet, pointer, audio, sound = false, lastClick = 0, audioGeneration = 0;
   let visibleResults = results, selected = -1, backdropDown = false;
   try {
     const saved = localStorage.getItem(storageKey);
@@ -99,6 +99,7 @@
     effects = preference === 'full' || (preference !== 'off' && !reduced.matches);
     document.body.dataset.motion = preference === 'full' ? 'full' : 'system';
     document.body.dataset.effects = effects ? 'on' : 'off';
+    document.documentElement.dataset.effects = effects ? 'on' : 'off';
     if (effectsButton) {
       effectsButton.setAttribute('aria-pressed', String(effects));
       effectsButton.disabled = false;
@@ -169,6 +170,7 @@
   }
   function closeAudio() {
     const previous = audio;
+    audioGeneration++;
     audio = null; sound = false; syncSound();
     if (previous && previous.state !== 'closed') previous.close().catch(() => {});
   }
@@ -176,10 +178,12 @@
     if (sound) { closeAudio(); return; }
     const Audio = window.AudioContext || window.webkitAudioContext;
     if (!Audio) return;
+    const generation = ++audioGeneration;
     try {
-      audio = new Audio(); sound = true; syncSound();
-      await audio.resume();
-    } catch { closeAudio(); }
+      const context = new Audio(); audio = context; sound = true; syncSound();
+      await context.resume();
+      if (generation !== audioGeneration && context.state !== 'closed') context.close().catch(() => {});
+    } catch { if (generation === audioGeneration) closeAudio(); }
   });
   document.addEventListener('click', (event) => {
     const target = event.target.closest?.('a, button');
@@ -208,7 +212,7 @@
     updateClock();
     if (clock && pageActive && !document.hidden) timer = setInterval(updateClock, 1000);
   }
-  document.addEventListener('visibilitychange', () => { syncClock(); if (document.hidden) clearPointer(); });
+  document.addEventListener('visibilitychange', () => { syncClock(); if (document.hidden) { clearPointer(); closeAudio(); } });
   window.addEventListener('pagehide', () => { pageActive = false; clearPointer(); clearInterval(timer); timer = 0; closeAudio(); dialog?.close(); });
   window.addEventListener('pageshow', () => { pageActive = true; syncEffects(); syncClock(); });
   syncEffects(); syncSound(); syncClock();

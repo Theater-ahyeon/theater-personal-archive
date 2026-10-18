@@ -11,7 +11,8 @@
   const phase = (time, start, end) => { const p = clamp((time - start) / (end - start)); return p * p * (3 - 2 * p); };
   const TAU = Math.PI * 2;
   let introFrame = 0, heroFrame = 0, introStart = 0, introOpen = false, manualIntro = null;
-  let heroVisible = true, pageActive = true, introDraws = 0, heroDraws = 0;
+  let heroVisible = true, pageActive = true, introDraws = 0, heroDraws = 0, lastHeroPaint = 0;
+  const introPhase = document.querySelector('#intro-phase');
   const pointer = { x: 0, y: 0, targetX: 0, targetY: 0 };
   const animations = new Set();
   const relicImage = document.querySelector('.hero-relic') || new Image();
@@ -157,6 +158,7 @@
     if (!size(opening)) return;
     introDraws++;
     const { ctx: c, width: w, height: h } = opening;
+    if (introPhase) introPhase.textContent = time < 1.65 ? 'ASSEMBLE / 结构显影' : time < 2.88 ? 'RESONATE / 轨道共振' : 'ENTER / 档案展开';
     const assembly = phase(time, .35, 1.9), reveal = phase(time, 3.05, 4.28);
     const objectAlpha = phase(time, .12, .55) * (1 - phase(time, 2.88, 3.24));
     c.fillStyle = `rgba(3,7,14,${1 - phase(time, 3.05, 4.12)})`; c.fillRect(0, 0, w, h);
@@ -234,7 +236,11 @@
   function tickHero(now) {
     heroFrame = 0;
     if (!allowed() || !heroVisible || introOpen || !pageActive || document.hidden) return;
-    pointer.x += (pointer.targetX - pointer.x) * .075; pointer.y += (pointer.targetY - pointer.y) * .075;
+    // Atmospheric geometry needs no more than 30fps; pointer easing is time-based.
+    if (now - lastHeroPaint < 1000 / 30 - .5) { heroFrame = requestAnimationFrame(tickHero); return; }
+    const delta = Math.min(100, now - lastHeroPaint || 1000 / 30); lastHeroPaint = now;
+    const ease = 1 - Math.pow(.925, delta / (1000 / 60));
+    pointer.x += (pointer.targetX - pointer.x) * ease; pointer.y += (pointer.targetY - pointer.y) * ease;
     hero.style.setProperty('--hero-x', `${pointer.x.toFixed(2)}px`); hero.style.setProperty('--hero-y', `${pointer.y.toFixed(2)}px`);
     drawHero(now / 1000);
     heroFrame = requestAnimationFrame(tickHero);

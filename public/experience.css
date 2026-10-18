@@ -51,3 +51,8 @@ html[data-navigation-motion=on] #main{view-transition-name:archive-page}
 @keyframes archive-page-in{from{opacity:0;clip-path:polygon(0 0,92% 0,88% 100%,0 100%)}to{opacity:1;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}}
 html[data-navigation-motion=off]::view-transition-group(*),html[data-navigation-motion=off]::view-transition-old(*),html[data-navigation-motion=off]::view-transition-new(*){animation:none!important}
 @media(prefers-reduced-motion:reduce){html:not([data-navigation-motion=on])::view-transition-group(*),html:not([data-navigation-motion=on])::view-transition-old(*),html:not([data-navigation-motion=on])::view-transition-new(*){animation:none!important}}
+/* Keep functional metadata readable on the paper sections. */
+.paper-section .tags{font-size:9px;color:#59655b}
+.paper-section .eyebrow,.paper-section .project-tabs small{color:#59655b}
+.paper-section .project-tabs small{font-size:8px;line-height:1.6}
+body:not([data-page=home]) .post-meta,body:not([data-page=home]) .post-overline{color:#59655b}

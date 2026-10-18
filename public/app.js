@@ -50,7 +50,7 @@
       menuToggle.setAttribute('aria-expanded', 'true');
       menuToggle.setAttribute('aria-label', '关闭导航');
       document.documentElement.style.overflow = 'hidden';
-      sidebar.querySelector('a[href]')?.focus({ preventScroll: true });
+      document.querySelector('#sidebar-close')?.focus();
     });
     shade.addEventListener('click', () => closeSidebar());
     document.querySelector('#sidebar-close')?.addEventListener('click', () => closeSidebar());
@@ -75,7 +75,8 @@
       const next = current < 0 ? (event.shiftKey ? items.length - 1 : 0)
         : (current + (event.shiftKey ? -1 : 1) + items.length) % items.length;
       event.preventDefault();
-      items[next]?.focus({ preventScroll: true });
+      // Native focus scrolling keeps wrapped controls visible in short drawers.
+      items[next]?.focus();
     });
     mobile.addEventListener('change', () => {
       const inside = sidebar.contains(document.activeElement);

@@ -16,6 +16,12 @@ for(const reduced of [false,true]){
  assert.equal(d.querySelector('#intro').hidden,true);
  d.querySelector('#menu-toggle').click();
  assert.equal(d.querySelector('#menu-toggle').inert,true);
+ assert.equal(d.activeElement.id,'sidebar-close');
+ d.querySelector('#sound-toggle').focus();
+ d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Tab',bubbles:true}));
+ assert.equal(d.activeElement.id,'sidebar-close');
+ d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true}));
+ assert.equal(d.activeElement.id,'sound-toggle');
  d.querySelector('#sidebar-close').click();
  assert.equal(d.querySelector('#menu-toggle').inert,false);
  assert.equal(d.querySelector('#sidebar').inert,true);

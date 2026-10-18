@@ -39,3 +39,15 @@ body.intro-playing .archive-music{visibility:hidden}
 @media(pointer:coarse){#music-toggle{min-height:44px}#music-volume{min-height:28px}}
 #sidebar-close{display:none}
 @media(max-width:900px){body.has-ui #sidebar-close{display:flex;align-items:center;justify-content:center;position:absolute;top:13px;right:17px;width:44px;height:44px;border:1px solid #a6b8b83d;background:#111b22}#sidebar-close svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.2}}
+/* Same-origin MPA enhancement. Unsupported browsers retain ordinary links/history. */
+@view-transition{navigation:auto}
+html[data-navigation-motion=on] #main{view-transition-name:archive-page}
+::view-transition-group(root){animation:none}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+::view-transition-group(archive-page){animation-duration:.32s;animation-timing-function:cubic-bezier(.22,.7,.2,1)}
+::view-transition-old(archive-page){animation:archive-page-out .1s ease-out both;mix-blend-mode:normal}
+::view-transition-new(archive-page){animation:archive-page-in .22s cubic-bezier(.22,.7,.2,1) .1s both;mix-blend-mode:normal}
+@keyframes archive-page-out{to{opacity:0}}
+@keyframes archive-page-in{from{opacity:0;clip-path:polygon(0 0,92% 0,88% 100%,0 100%)}to{opacity:1;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}}
+html[data-navigation-motion=off]::view-transition-group(*),html[data-navigation-motion=off]::view-transition-old(*),html[data-navigation-motion=off]::view-transition-new(*){animation:none!important}
+@media(prefers-reduced-motion:reduce){html:not([data-navigation-motion=on])::view-transition-group(*),html:not([data-navigation-motion=on])::view-transition-old(*),html:not([data-navigation-motion=on])::view-transition-new(*){animation:none!important}}

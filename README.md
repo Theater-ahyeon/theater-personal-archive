@@ -22,6 +22,7 @@ npm run preview
 - `public/archive-v10.css`：完整布局、定制组件、阅读排版和响应式。
 - `public/archive-v10.js`：三维投影几何开场、前后图形层、视差和章节动画。
 - `public/app.js`：项目/锚点、移动导航、开场跳过与焦点。
+- `public/navigation.js`：可选原生跨页面转场，保留浏览器链接、历史记录和滚动恢复；支持关闭动效与减少动态偏好。
 - `public/experience.js` 与 `public/experience.css`：章节几何仪器、指针局部光、阅读进度和常驻音乐控制。
 - `public/soundtrack.js`：原创氛围配乐，完全本地合成、无下载音轨或自动播放。
 - `public/terminal.js`：本地搜索、键盘、动效偏好、默认静音的合成音效与时钟。

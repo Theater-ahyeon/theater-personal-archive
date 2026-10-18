@@ -28,3 +28,11 @@ Only `theater-personal-archive`. Existing content, user assets, and the independ
 2. Actual audio output and long-dwell hidden/visible behavior.
 3. Rapid project/replay/search/menu sequences; touch targets, keyboard focus and no-JS reading.
 4. Exact-commit Pages workflow and live-site validation after publication.
+
+## Native article-navigation pass
+
+- Same-origin archive/article navigation now uses optional native cross-document View Transitions. The outgoing text fades for 100ms before the incoming geometric reveal begins (220ms), avoiding overlapping headings. Links, browser history, back/forward cache and scroll restoration remain browser-native.
+- Early `navigation.js` respects saved preferences before first paint, including system reduced motion. It skips transitions on both outgoing and incoming events when disabled, and uses in-page state when storage is unavailable. Unsupported browsers keep ordinary navigation.
+- Native browser review verified both enabled and disabled archive/article/Back/Forward flows. Article scrollY 756 and reading progress 0.7682926829 restored exactly after settled history navigation. Music returns paused, no opening replay, no inert shell.
+- Script-free fixtures (generated only in ignored `dist`, removed by build) verified readable home/article layouts, all three projects visible, and mobile fallback navigation at 500px. This is a script-free HTML fixture test, not browser-wide JavaScript disabling.
+- Browser timing/animation instrumentation was unavailable in the sanitized browser read scope. No first-paint or browser frame-rate metric is claimed. `tests/navigation.cjs` adds deterministic gate coverage without intercepting navigation.

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node build.mjs",
     "preview": "node preview.mjs",
-    "test": "node check.mjs && node tests/soundtrack.cjs && node tests/motion.cjs && node tests/dom.cjs"
+    "test": "node check.mjs && node tests/soundtrack.cjs && node tests/motion.cjs && node tests/dom.cjs && node tests/navigation.cjs"
   },
   "engines": {
     "node": ">=22"

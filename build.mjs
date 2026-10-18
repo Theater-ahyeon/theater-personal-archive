@@ -8,7 +8,7 @@ const root = fileURLToPath(new URL('.', import.meta.url));
 const output = resolve(root, 'dist');
 const site = JSON.parse(readFileSync(join(root, 'site.json'), 'utf8'));
 const assetHash = createHash('sha256');
-for (const file of ['archive-v10.css', 'terminal.js', 'app.js', 'archive-v10.js', 'experience.js', 'experience.css', 'soundtrack.js']) assetHash.update(readFileSync(join(root, 'public', file)));
+for (const file of ['archive-v10.css', 'terminal.js', 'app.js', 'archive-v10.js', 'experience.js', 'experience.css', 'soundtrack.js', 'navigation.js']) assetHash.update(readFileSync(join(root, 'public', file)));
 const assetVersion = assetHash.digest('hex').slice(0, 10);
 const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const external = value => {
@@ -56,6 +56,7 @@ function shell(title, content, { prefix = './', page = 'home', description = sit
   <link rel="icon" type="image/svg+xml" href="${prefix}assets/favicon.svg">
   <link rel="preload" href="${prefix}assets/fonts/bodoni-moda.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="${prefix}assets/fonts/noto-serif-sc.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="${prefix}assets/navigation.js?v=${assetVersion}"></script>
   <link rel="stylesheet" href="${prefix}assets/archive-v10.css?v=${assetVersion}">
   <link rel="stylesheet" href="${prefix}assets/experience.css?v=${assetVersion}">
   <script src="${prefix}assets/experience.js?v=${assetVersion}" defer></script>

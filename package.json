@@ -1,0 +1,13 @@
+{
+  "name": "theater-personal-archive",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "preview": "node preview.mjs",
+    "test": "node check.mjs"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": { "marked": "18.0.14" }
+}

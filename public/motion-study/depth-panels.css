@@ -1,0 +1,185 @@
+/* Local depth survives scene transforms; the timeline owns motion and opacity. */
+.study-cards,
+.armor-inner,
+.b-sidebar nav,
+.terminal,
+.terminal-right,
+.wire-scene,
+.dashboard {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  perspective-origin: 50% 46%;
+}
+
+.study-card,
+.b-sidebar nav button,
+.terminal-left,
+.emblem-panel,
+.notice,
+.profile-card,
+.wire-window,
+.wire-data {
+  --panel-depth: 8px;
+  --panel-yaw: 0deg;
+  transform-style: preserve-3d;
+  translate: 0 0 calc(var(--panel-depth) + var(--camera-depth, 0px) * .08);
+  rotate: y calc(var(--panel-yaw) + var(--camera-y, 0deg) * .12);
+  transform-origin: 50% 50%;
+  box-shadow: 0 1px 1px #d3e6e914, 2px 4px 2px #0006, 4px 11px 13px #0004;
+}
+
+.study-card:nth-child(3n + 1) { --panel-yaw: 1.2deg; }
+.study-card:nth-child(3n + 2) { --panel-depth: 13px; }
+.study-card:nth-child(3n) { --panel-yaw: -1.2deg; }
+.study-card.highlight { --panel-depth: 20px; }
+.study-card::before,
+.study-card::after {
+  display: block;
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  border: 0;
+  z-index: auto;
+  opacity: 1;
+}
+.study-card::before,
+.study-card.highlight::before {
+  inset: 0 0 0 auto;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(90deg, #10181d, #587171 80%, #bddbd94d);
+  transform-origin: right center;
+  transform: rotateY(-90deg);
+}
+.study-card::after {
+  inset: auto 0 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(#5a74716b, #080f13 80%);
+  transform-origin: center bottom;
+  transform: rotateX(90deg);
+}
+.study-card .card-image { translate: 0 0 2px; }
+.study-card .card-body { translate: 0 0 4px; }
+.study-card .card-corners { translate: 0 0 6px; }
+.card-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(124deg, #d5f4ee0d, transparent 34% 68%, #a9e4e808);
+  box-shadow: inset 0 1px #e0f5f528, inset 1px 0 #e0f5f514;
+}
+
+.armor-shell {
+  translate: 0 0 14px;
+  transform-origin: center;
+  filter: none;
+}
+.armor-inner { translate: 0 0 3px; }
+.armor-inner > :is(.wordmark, .sigils) { translate: 0 0 5px; }
+.armor-inner > :is(.operator, .small-gauges, .waveform) { translate: 0 0 2px; }
+
+.b-sidebar nav button {
+  --panel-depth: 5px;
+  --panel-yaw: 1.5deg;
+  --panel-fill: linear-gradient(112deg, #2d383df0, #233139db 75%, #455258aa);
+  clip-path: none;
+  border: 0;
+  background: none;
+  box-shadow: 2px 4px 4px #0004;
+}
+.b-sidebar nav button.selected {
+  --panel-depth: 10px;
+  --panel-fill: linear-gradient(95deg, #9ee9e3, #88c8c8);
+  background: none;
+}
+.b-sidebar nav button.light {
+  --panel-fill: linear-gradient(105deg, #eef1ea, #cdd6d8);
+  background: none;
+}
+.b-sidebar nav button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid #b9d2d344;
+  background: var(--panel-fill);
+  clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 0 100%);
+  transform: translateZ(-1px);
+  pointer-events: none;
+  box-shadow: inset 0 1px #f0fffa21, inset 0 -1px #0007;
+}
+.b-sidebar nav button::after {
+  inset: auto 0 0;
+  width: 100%;
+  height: 5px;
+  border: 0;
+  clip-path: none;
+  background: linear-gradient(#6489868c, #101b20);
+  transform-origin: center bottom;
+  transform: rotateX(90deg);
+}
+.b-sidebar nav button.selected::before { border-color: #b2f4ea99; }
+.b-sidebar nav button.light::before { border: 1px solid #ecebc987; }
+.b-sidebar nav button span { translate: 0 0 3px; }
+
+.terminal-left { --panel-depth: 17px; --panel-yaw: 1.4deg; }
+.terminal-left > :is(.terminal-title, .signal-plot, .terminal-bars) { translate: 0 0 4px; }
+.terminal-left > :is(.warning-title, .warning-small) { translate: 0 0 7px; }
+.terminal-right {
+  translate: 0 0 8px;
+  rotate: y calc(-1.6deg + var(--camera-y, 0deg) * .08);
+  transform-origin: left center;
+}
+.emblem-panel { --panel-depth: 8px; --panel-yaw: -.6deg; }
+.emblem-panel > svg { translate: 0 0 19px; }
+.emblem-panel > .emblem-brackets { translate: 0 0 9px; }
+.emblem-panel > :is(.panel-caption, .micro-spec, .emblem-caption) { translate: 0 0 3px; }
+.emblem-panel::before,
+.wire-window::before,
+.wire-data::before,
+.profile-card::before { translate: 0 0 6px; }
+.emblem-panel::after,
+.wire-window::after,
+.wire-data::after,
+.profile-card::after { translate: 0 0 6px; }
+.notice {
+  --panel-depth: 15px;
+  --panel-yaw: -.8deg;
+  position: relative;
+}
+.notice.lower { --panel-depth: 8px; --panel-yaw: -1.4deg; }
+.notice > :is(h3, p, small, .observation) { translate: 0 0 3px; }
+.notice > .notice-icon { left: 10px; top: 20px; translate: 0 0 8px; }
+.notice::before,
+.terminal-left::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(90deg, #0d171bd9, #859e945e);
+  transform-origin: right center;
+  transform: rotateY(-90deg);
+  pointer-events: none;
+}
+.notice::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(122deg, #b7dcd205, transparent 44% 77%, #e3d67b08);
+  transform: translateZ(1px);
+  border-top: 1px solid #c9d9b626;
+}
+
+.profile-card { --panel-depth: 20px; }
+.profile-card > img { translate: 0 0 2px; }
+.profile-card > div { translate: 0 0 5px; }
+.profile-card > .panel-caption { translate: 0 0 7px; }
+.wire-window { --panel-depth: 7px; --panel-yaw: .8deg; }
+.wire-data { --panel-depth: 18px; --panel-yaw: -1.2deg; }
+.wire-window > .panel-caption,
+.wire-data > .panel-caption { translate: 0 0 5px; }
+.wire-data > :is(h3, p, strong) { translate: 0 0 3px; }
+.wire-window > .wire-corner { translate: 0 0 8px; }

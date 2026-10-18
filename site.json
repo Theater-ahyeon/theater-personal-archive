@@ -1,0 +1,56 @@
+{
+  "name": "theater",
+  "github": "https://github.com/Theater-ahyeon",
+  "handle": "Theater-ahyeon",
+  "tagline": "一万年太久，只争朝夕",
+  "bio": "在 BUPT 学习计算机。做一些有趣的项目，读一些值得读的源码，把探索留下来。",
+  "avatar": "assets/avatar.jpg",
+  "projects": [
+    {
+      "name": "零点契约",
+      "code": "MIDNIGHT CONTRACT",
+      "description": "自托管多模型 AI 智能体工作台。把运行时、工作区、记忆、工具与自动化放进同一个工作现场。",
+      "tags": ["AI AGENT", "WORKSPACE"],
+      "image": "assets/project-midnight.png",
+      "imageAlt": "零点契约公开工作台运行界面",
+      "imageCaption": "LIVE INTERFACE / 公开运行截图",
+      "url": "https://github.com/Theater-ahyeon/midnight-contract"
+    },
+    {
+      "name": "skin-craft",
+      "code": "REFERENCE → INTERFACE",
+      "description": "从视觉参考到真实界面。结合项目源码、生成素材和浏览器验证，让设计真正落到组件里。",
+      "tags": ["FRONTEND", "AGENT SKILL"],
+      "workflow": ["理解项目", "视觉契约", "组件融合", "运行验证"],
+      "url": "https://github.com/Theater-ahyeon/skin-craft"
+    },
+    {
+      "name": "Harness 中文教材",
+      "code": "READ THE REAL SYSTEM",
+      "description": "沿真实任务链理解 DeepSeek Harness。把源码里的运行逻辑，整理成可以逐步阅读的中文教材。",
+      "tags": ["SOURCE CODE", "LEARNING"],
+      "image": "assets/project-harness.png",
+      "imageAlt": "DeepSeek Harness 中文教材公开在线阅读器",
+      "imageCaption": "ONLINE READER / 公开阅读器",
+      "url": "https://github.com/Theater-ahyeon/deepseek-harness-textbook"
+    }
+  ],
+  "posts": [
+    {
+      "slug": "welcome",
+      "title": "从这里开始，留下一点探索的痕迹。",
+      "date": "2026-10-08",
+      "category": "站点手记",
+      "summary": "关于这个个人空间，以及代码、项目与文字如何在这里相遇。",
+      "label": "开站示例"
+    },
+    {
+      "slug": "reading-a-project",
+      "title": "读一个项目，可以先跟完一条任务链。",
+      "date": "2026-10-07",
+      "category": "学习笔记",
+      "summary": "从一个具体输入出发，依次寻找入口、状态、执行过程和结果。",
+      "label": "写作示例"
+    }
+  ]
+}

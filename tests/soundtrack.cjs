@@ -100,6 +100,25 @@ function assertUI(env, state, pressed, busy = false) {
 }
 
 const tests = [
+  ['history-restored range is synchronized and explicit play reads actual mute', async () => {
+    const env = setup();
+    env.elements['music-volume'].value = '0'; // Browser restoration emits no input.
+    env.windows.popstate();
+    assert.equal(env.elements['music-volume-value'].textContent, '0%');
+    assert.equal(env.elements['music-volume'].attributes['aria-valuetext'], '静音');
+    assert.equal(env.contexts.length, 0);
+    env.click(); await flush();
+    assert.equal(master(env.contexts[0]).gain.calls.find(c => c.name === 'linearRampToValueAtTime').args[0], 0);
+    env.click();
+    env.windows.pageshow({ persisted: true });
+    env.elements['music-volume'].value = '50'; // Restoration can follow pageshow dispatch.
+    for (const [id, fn] of [...env.timers]) if (fn.delay === 0) { env.timers.delete(id); fn(); }
+    assert.equal(env.elements['music-volume-value'].textContent, '50%');
+    env.elements['music-volume'].value = '0'; // Even a late restore before play stays muted.
+    env.click(); await flush();
+    assert.equal(master(env.contexts[1]).gain.calls.find(c => c.name === 'linearRampToValueAtTime').args[0], 0);
+    env.click();
+  }],
   ['no autoplay; explicit start/pause disposes voices, graph, timer', async () => {
     const env = setup();
     assert.equal(env.contexts.length, 0); assert.equal(env.timers.size, 0);

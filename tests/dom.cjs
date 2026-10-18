@@ -18,7 +18,11 @@ for(const reduced of [false,true]){
  assert.equal(d.querySelector('#music-options').hidden,true);
  d.querySelector('#music-settings').click();
  assert.equal(d.querySelector('#music-options').hidden,false);
- const volume=d.querySelector('#music-volume');volume.value='0';volume.dispatchEvent(new w.Event('input'));
+ const volume=d.querySelector('#music-volume');volume.value='0';w.dispatchEvent(new w.PopStateEvent('popstate'));
+ assert.equal(d.querySelector('#music-volume-summary').textContent,'静音');
+ volume.value='50';d.querySelector('#music-toggle').click();
+ assert.equal(d.querySelector('#music-volume-summary').textContent,'50%');
+ volume.value='0';volume.dispatchEvent(new w.Event('input'));
  assert.equal(d.querySelector('#music-volume-summary').textContent,'静音');
  volume.focus();d.querySelector('#archive-music').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
  assert.equal(d.querySelector('#music-options').hidden,true);assert.equal(d.activeElement.id,'music-settings');

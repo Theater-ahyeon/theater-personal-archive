@@ -39,6 +39,9 @@
     }
   });
   volume?.addEventListener('input', syncVolumeSummary);
+  addEventListener('pageshow', () => setTimeout(syncVolumeSummary, 0));
+  addEventListener('popstate', syncVolumeSummary);
+  document.querySelector('#music-toggle')?.addEventListener('click', syncVolumeSummary);
   narrow.addEventListener('change', syncPlayer);
   syncPlayer(); syncVolumeSummary();
   const sections = [...document.querySelectorAll('.works-stage,.journal-stage,.profile-stage')];

@@ -130,6 +130,7 @@
   }
 
   async function play() {
+    syncVolume(); // History may restore a range without firing input.
     let session;
     try {
       const context = new Audio();
@@ -175,7 +176,7 @@
     if (current) pause(undefined, true);
     else if (!document.hidden) void play();
   });
-  slider.addEventListener('input', () => {
+  function syncVolume() {
     volume = Math.max(0, Math.min(100, Number(slider.value) || 0));
     if (value) value.textContent = `${volume}%`;
     slider.setAttribute('aria-valuetext', volume === 0 ? '静音' : `${volume}%`);
@@ -185,7 +186,12 @@
       current.master.gain.setTargetAtTime(level(), now, 0.08);
       current.envelope = { kind: 'target', time: now, value: held, target: level(), duration: 0.08 };
     }
-  });
+  }
+  slider.addEventListener('input', syncVolume);
+  // Persisted form values may be restored after pageshow; popstate and the
+  // next task cover that ordering without restoring playback.
+  window.addEventListener('pageshow', () => setTimeout(syncVolume, 0));
+  window.addEventListener('popstate', syncVolume);
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && (current || retiring)) pause('页面离开时已暂停 · 点击继续');
   });

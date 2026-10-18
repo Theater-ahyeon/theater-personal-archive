@@ -56,3 +56,16 @@ html[data-navigation-motion=off]::view-transition-group(*),html[data-navigation-
 .paper-section .eyebrow,.paper-section .project-tabs small{color:#59655b}
 .paper-section .project-tabs small{font-size:8px;line-height:1.6}
 body:not([data-page=home]) .post-meta,body:not([data-page=home]) .post-overline{color:#59655b}
+/* Narrow-screen transport stays reachable without covering a paragraph of text. */
+#music-options{display:contents}
+#music-settings{display:none}
+@media(max-width:900px){
+ .archive-music{padding:2px 10px;grid-template-columns:auto auto;gap:0 12px;max-width:calc(100vw - 32px)}
+ #music-toggle{grid-column:1;grid-row:1;min-height:44px}
+ #music-settings:not([hidden]){display:flex;grid-column:2;grid-row:1;align-items:center;gap:6px;min-height:44px;padding:0;font:9px var(--mono);color:#b8c8c4}
+ .music-settings-caret{transition:transform .2s;font:15px Arial,sans-serif}
+ #music-settings[aria-expanded=true] .music-settings-caret{transform:rotate(180deg)}
+ #music-options{display:grid;grid-column:1/-1;grid-template-columns:1fr;gap:4px;padding:5px 0 9px;border-top:1px solid #a4b9b729}
+ #music-options .music-volume-label,#music-options #music-volume,#music-options #music-status{grid-column:1}
+ #music-options #music-volume{width:100%;min-height:28px}
+}

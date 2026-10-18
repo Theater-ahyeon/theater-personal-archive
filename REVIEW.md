@@ -43,3 +43,9 @@ Only `theater-personal-archive`. Existing content, user assets, and the independ
 - Functional paper-section metadata now uses #59655b against #e8e5dd (solid-color contrast 4.85:1); project tags are 9px and tab metadata 8px. Native 333px/500px checks showed no clipping or horizontal overflow. This is targeted contrast work, not a claim of complete WCAG conformance.
 - Actual browser OfflineAudioContext rendered the production soundtrack (SHA-256 `14034c72642b1a17e321d55594f1d1bd63b5b1b22354510a59f7a3efc29a6d92`) for 60 seconds at 44,100Hz, 2,646,000 frames/channel, 78 oscillators. The fixture ran the actual source with a virtual 250ms scheduling clock; no audible playback.
 - At 35%: RMS 0.00304027, peak 0.02200138, maximum adjacent-sample delta 0.00099897. At 100%: RMS 0.0163081167, peak 0.118016049, maximum adjacent delta 0.00535849668. Both had zero nonfinite or full-scale samples, and identical dual-mono channels. This confirms finite, unclipped synthesis and an amplitude range of about 5.36×, not perceptual loudness or musical taste. Gain remains unchanged pending real listening feedback.
+
+## Compact mobile player
+
+- Narrow-screen music controls now default to a 49px transport strip with always-reachable play/pause and a labeled volume summary. Volume settings expand explicitly; 0% displays 静音 even when collapsed. Desktop controls remain expanded.
+- Escape closes settings and restores focus. Breakpoint changes reveal the destination before moving focus, then hide the obsolete control, avoiding loss of keyboard focus.
+- Native checks at 333px/500px verified compact height, expansion, keyboard mute, Escape, exclusion of collapsed slider from Tab order and unobscured footer links. Both 500→1180 and 1180→500 focus-transfer directions passed with no playback activation. Deterministic DOM tests cover both directions.

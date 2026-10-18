@@ -3,7 +3,9 @@ const fs=require('fs'), assert=require('assert/strict');
 function setup(mobile, reduced){
  const dom=new JSDOM(fs.readFileSync('dist/index.html','utf8'),{url:'https://example.com/',runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window;
- w.matchMedia=q=>({matches:q.includes('max-width')?mobile:q.includes('reduced')?reduced:true,addEventListener(){}});
+ const media=new Map();
+ w.matchMedia=q=>{if(!media.has(q))media.set(q,{matches:q.includes('max-width')?mobile:q.includes('reduced')?reduced:true,listeners:[],addEventListener(n,fn){this.listeners.push(fn)}});return media.get(q)};
+ dom.changeWidth=mobile=>{const m=media.get('(max-width: 900px)');m.matches=mobile;m.listeners.forEach(fn=>fn());};
  w.HTMLElement.prototype.getClientRects=function(){return this.hidden?[]:[{width:100,height:30}]};
  w.HTMLElement.prototype.scrollIntoView=function(){};
  w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false};
@@ -13,6 +15,15 @@ function setup(mobile, reduced){
 for(const reduced of [false,true]){
  const dom=setup(true,reduced), w=dom.window,d=w.document;
  d.querySelector('#skip-intro').click();
+ assert.equal(d.querySelector('#music-options').hidden,true);
+ d.querySelector('#music-settings').click();
+ assert.equal(d.querySelector('#music-options').hidden,false);
+ const volume=d.querySelector('#music-volume');volume.value='0';volume.dispatchEvent(new w.Event('input'));
+ assert.equal(d.querySelector('#music-volume-summary').textContent,'静音');
+ volume.focus();d.querySelector('#archive-music').dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+ assert.equal(d.querySelector('#music-options').hidden,true);assert.equal(d.activeElement.id,'music-settings');
+ dom.changeWidth(false);assert.equal(d.activeElement.id,'music-toggle');assert.equal(d.querySelector('#music-options').hidden,false);
+ volume.focus();dom.changeWidth(true);assert.equal(d.activeElement.id,'music-settings');assert.equal(d.querySelector('#music-options').hidden,true);
  assert.equal(d.querySelector('#intro').hidden,true);
  d.querySelector('#menu-toggle').click();
  assert.equal(d.querySelector('#menu-toggle').inert,true);

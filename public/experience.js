@@ -3,6 +3,44 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const fine = matchMedia('(pointer: fine)');
   const allowed = () => document.body.dataset.effects !== 'off' && (!reduced.matches || document.body.dataset.motion === 'full');
+  const player = document.querySelector('#archive-music');
+  const settings = document.querySelector('#music-settings');
+  const options = document.querySelector('#music-options');
+  const volume = document.querySelector('#music-volume');
+  const summary = document.querySelector('#music-volume-summary');
+  const narrow = matchMedia('(max-width: 900px)');
+  let expanded = false;
+  function syncPlayer() {
+    if (!player || !settings || !options) return;
+    const visible = !narrow.matches || expanded;
+    const focusInOptions = options.contains(document.activeElement);
+    const focusOnSettings = document.activeElement === settings;
+    // Reveal the destination before transferring focus across a breakpoint.
+    if (narrow.matches) settings.hidden = false;
+    options.hidden = !visible;
+    if (!visible && focusInOptions) settings.focus({ preventScroll: true });
+    if (!narrow.matches) {
+      if (focusOnSettings) document.querySelector('#music-toggle')?.focus({ preventScroll: true });
+      settings.hidden = true;
+    }
+    settings.setAttribute('aria-expanded', String(visible));
+    player.dataset.expanded = String(visible);
+  }
+  function syncVolumeSummary() {
+    if (!volume || !summary || !settings) return;
+    const value = Math.max(0, Math.min(100, Number(volume.value) || 0));
+    summary.textContent = value === 0 ? '静音' : `${value}%`;
+    settings.setAttribute('aria-label', `音量设置，当前${value === 0 ? '静音' : value + '%'}`);
+  }
+  settings?.addEventListener('click', () => { expanded = !expanded; syncPlayer(); });
+  player?.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && narrow.matches && expanded) {
+      event.preventDefault(); event.stopPropagation(); expanded = false; syncPlayer(); settings.focus({ preventScroll: true });
+    }
+  });
+  volume?.addEventListener('input', syncVolumeSummary);
+  narrow.addEventListener('change', syncPlayer);
+  syncPlayer(); syncVolumeSummary();
   const sections = [...document.querySelectorAll('.works-stage,.journal-stage,.profile-stage')];
   let frame = 0;
   const update = () => {

@@ -72,9 +72,12 @@ function shell(title, content, { prefix = './', page = 'home', description = sit
     <div id="archive-music" class="archive-music" hidden>
       <div class="music-track"><span class="music-disc" aria-hidden="true">✧</span><span>TIDAL ARCHIVE<small>THEATER / ORIGINAL AMBIENT</small></span></div>
       <button id="music-toggle" type="button" aria-pressed="false" aria-label="背景音乐" aria-describedby="music-status"><span aria-hidden="true">♫</span><span id="music-label">播放氛围音乐</span></button>
+      <button id="music-settings" type="button" aria-expanded="false" aria-controls="music-options"><span>音量</span><span id="music-volume-summary">35%</span><span class="music-settings-caret" aria-hidden="true">⌃</span></button>
+      <div id="music-options">
       <label class="music-volume-label" for="music-volume">音量 <span id="music-volume-value">35%</span></label>
       <input id="music-volume" type="range" min="0" max="100" value="35" step="1" aria-label="背景音乐音量">
       <p id="music-status" role="status" aria-live="polite">原创合成 · 点击播放</p>
+      </div>
     </div>
     <a class="skip-link" href="#main">跳到正文</a>
     <button id="sidebar-shade" hidden tabindex="-1" aria-label="关闭导航"></button>

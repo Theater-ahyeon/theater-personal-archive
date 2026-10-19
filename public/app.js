@@ -131,7 +131,7 @@
     }
     skip.focus({ preventScroll: true });
     timer = setTimeout(closeIntro, 4400);
-    try { sessionStorage.setItem('theater-intro-v10-seen', '1'); } catch { /* Private storage is optional. */ }
+    try { sessionStorage.setItem('theater-intro-dual-archive-seen', '1'); } catch { /* Private storage is optional. */ }
   }
 
   skip?.addEventListener('click', closeIntro);
@@ -154,7 +154,7 @@
   syncMotion();
 
   let seen = false;
-  try { seen = sessionStorage.getItem('theater-intro-v10-seen') === '1'; } catch { /* Continue without storage. */ }
+  try { seen = sessionStorage.getItem('theater-intro-dual-archive-seen') === '1'; } catch { /* Continue without storage. */ }
   if (document.body.dataset.page === 'home' && !seen) openIntro();
   if (!active) document.body.classList.add('scene-entered');
 

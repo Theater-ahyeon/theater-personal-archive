@@ -8,7 +8,7 @@ const root = fileURLToPath(new URL('.', import.meta.url));
 const output = resolve(root, 'dist');
 const site = JSON.parse(readFileSync(join(root, 'site.json'), 'utf8'));
 const assetHash = createHash('sha256');
-for (const file of ['archive-v10.css', 'terminal.js', 'app.js', 'archive-v10.js', 'experience.js', 'experience.css', 'soundtrack.js', 'navigation.js']) assetHash.update(readFileSync(join(root, 'public', file)));
+for (const file of ['archive-v10.css', 'terminal.js', 'app.js', 'archive-v10.js', 'experience.js', 'experience.css', 'soundtrack.js', 'navigation.js', 'reconstruction.css', 'cinematic-integration.js']) assetHash.update(readFileSync(join(root, 'public', file)));
 const assetVersion = assetHash.digest('hex').slice(0, 10);
 const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const external = value => {
@@ -56,6 +56,7 @@ function shell(title, content, { prefix = './', page = 'home', description = sit
   <link rel="icon" type="image/svg+xml" href="${prefix}assets/favicon.svg">
   <link rel="preload" href="${prefix}assets/fonts/bodoni-moda.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="${prefix}assets/fonts/noto-serif-sc.woff2" as="font" type="font/woff2" crossorigin>
+  ${page === 'home' ? '<link rel="preload" as="image" href="./assets/project-midnight-intro.webp"><link rel="preload" as="image" href="./assets/project-harness-intro.webp">' : ''}
   <script src="${prefix}assets/navigation.js?v=${assetVersion}"></script>
   <link rel="stylesheet" href="${prefix}assets/archive-v10.css?v=${assetVersion}">
   <link rel="stylesheet" href="${prefix}assets/experience.css?v=${assetVersion}">
@@ -63,7 +64,8 @@ function shell(title, content, { prefix = './', page = 'home', description = sit
   <script src="${prefix}assets/soundtrack.js?v=${assetVersion}" defer></script>
   <script src="${prefix}assets/terminal.js?v=${assetVersion}" defer></script>
   <script src="${prefix}assets/app.js?v=${assetVersion}" defer></script>
-  <script src="${prefix}assets/archive-v10.js?v=${assetVersion}" defer></script>
+  ${page === 'home' ? `<script type="module" src="${prefix}assets/cinematic-integration.js?v=${assetVersion}"></script>` : `<script src="${prefix}assets/archive-v10.js?v=${assetVersion}" defer></script>`}
+  <link rel="stylesheet" href="${prefix}assets/reconstruction.css?v=${assetVersion}">
 </head>
 <body data-page="${page}">
   ${intro()}
@@ -144,7 +146,8 @@ function postList(items, prefix, heading = 'h3') {
 function projectImage(project) {
   if (project.image) {
     if (!/^assets\/[a-z0-9._-]+$/i.test(project.image)) throw new Error('项目图片必须位于 assets 目录');
-    return `<img src="./${escape(project.image)}" loading="lazy" alt="${escape(project.imageAlt || project.name)}"><figcaption class="preview-caption">${escape(project.imageCaption || 'PROJECT / 项目预览')}</figcaption>`;
+    const introImage = project.image === 'assets/project-midnight.png' ? 'assets/project-midnight-intro.webp' : project.image === 'assets/project-harness.png' ? 'assets/project-harness-intro.webp' : '';
+    return `<img src="./${escape(project.image)}"${introImage ? ` data-intro-src="./${introImage}"` : ''} loading="lazy" alt="${escape(project.imageAlt || project.name)}"><figcaption class="preview-caption">${escape(project.imageCaption || 'PROJECT / 项目预览')}</figcaption>`;
   }
   return `<div class="workflow-visual"><span class="workflow-overline">${escape(project.code)}</span><strong>FROM VISION.<br><em>TO INTERFACE.</em></strong><ol class="workflow-steps">${(project.workflow || project.tags).map((step, index) => `<li><b>${number(index + 1)}</b><span>${escape(step)}</span></li>`).join('')}</ol></div><figcaption class="preview-caption">WORKFLOW / 工作流程示意</figcaption>`;
 }
@@ -157,33 +160,28 @@ const projects = site.projects.map((project, index) => `<article class="project-
   </div>
 </article>`).join('');
 
-const home = `<section class="stage hero" id="about" aria-labelledby="hero-title">
-  <div class="hero-scenery" aria-hidden="true"><img class="hero-backdrop" src="./assets/v10/sea.webp" width="1672" height="941" alt="" fetchpriority="high"></div>
-  <div class="hero-sculpture" aria-hidden="true"><img class="hero-relic" src="./assets/v10/relic.webp" width="1254" height="1254" alt=""></div><canvas id="hero-field" aria-hidden="true"></canvas>
-  <div class="hero-content">
-    <p class="hero-kicker">CODE / PROJECTS / NOTES</p>
-    <h1 id="hero-title">THEATER</h1>
-    <div class="hero-subtitle"><p>在代码与思考之间，把探索留下来。<em>A PERSONAL ARCHIVE OF THINGS IN THE MAKING.</em></p></div>
-    <div class="hero-actions"><a class="action-link primary" href="#projects"><span>查看项目<small>EXPLORE PROJECTS</small></span><span aria-hidden="true">→</span></a><a class="action-link" href="./blog/index.html"><span>阅读手记<small>READ THE NOTES</small></span><span aria-hidden="true">→</span></a></div>
-    <p class="hero-note">记录，构建，持续前行。<br>这里是一场尚未结束的探索。<small>SOME IDEAS DESERVE<br>TO BECOME SOMETHING REAL.</small></p>
-    <div class="hero-tools"><button id="experience-intro" class="experience-trigger" aria-label="播放完整开场动画，启用动态效果"><span aria-hidden="true">▷</span> 播放序章</button><a class="hero-study" href="./assets/motion-study/index.html">动效放映室 ${arrow}</a></div>
+const home = `<section class="stage hero command-deck" id="about" aria-labelledby="hero-title">
+  <div class="deck-grid" aria-hidden="true"></div>
+  <div class="deck-overline"><span><i></i> PERSONAL ARCHIVE / THEATER</span><span>CODE · DESIGN · EXPLORATION</span></div>
+  <header class="hero-masthead"><h1 id="hero-title">THEATER<span aria-hidden="true">.</span></h1><div class="masthead-index"><b>01—04</b><span>持续构建中的<br>个人档案</span></div></header>
+  <div class="command-layout">
+    <div class="hero-content"><p class="hero-kicker"><span>OPEN ARCHIVE</span> / 个人终端</p><h2>把想法构建成形。<br>把探索留在这里。</h2><div class="hero-subtitle"><p>在代码与思考之间，<br>记录每一次从零开始。<em>THINGS IN THE MAKING.</em></p></div><div class="hero-actions"><a class="action-link primary" href="#projects"><span>进入项目档案<small>EXPLORE PROJECTS</small></span>${arrow}</a><a class="action-link" href="./blog/index.html"><span>阅读手记<small>READ THE NOTES</small></span>${arrow}</a></div><div class="hero-tools"><button id="experience-intro" class="experience-trigger" aria-label="播放完整开场动画，启用动态效果"><span aria-hidden="true">▷</span> 重播双章序幕</button></div></div>
+    <figure class="hero-instrument" aria-label="由动效放映章重构的几何线框装置"><div class="instrument-header"><span>STRUCTURE / NATIVE GEOMETRY</span><b>A × B</b></div><canvas id="hero-instrument" aria-hidden="true"></canvas><svg class="instrument-fallback" viewBox="0 0 440 400" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="220" cy="200" r="145" stroke-dasharray="2 9"/><circle cx="220" cy="200" r="116"/><path d="m220 50 135 150-135 150L85 200Zm0 50 90 100-90 100-90-100Zm-135 100h270M220 50v300M130 100l180 200M310 100 130 300"/><path d="M25 200h35m320 0h35M220 5v25m0 340v25"/></g></svg><figcaption><span>折叠、展开，<br>让秩序从结构中生长。</span><small>FRAME ASSEMBLY<br>→ ARCHIVE INTERFACE</small></figcaption></figure>
+    <nav class="hero-project-index hero-summary" aria-label="精选项目索引"><div class="index-heading"><span>AVAILABLE WORKS</span><b>${number(site.projects.length)}</b></div>${site.projects.map((project,index)=>`<a href="#work-${index}"><span class="hero-project-number">${number(index+1)}</span><strong>${escape(project.name)}</strong><small>${escape(project.code)}</small>${arrow}</a>`).join('')}<a class="index-all" href="${github}?tab=repositories"><span>OPEN GITHUB</span>${arrow}</a></nav>
   </div>
-  <aside class="hero-aside"><p>从一个想法开始，<br>在实践中留下痕迹。</p><small>${number(site.projects.length)} PROJECTS<br>${number(posts.length)} FIELD NOTES</small></aside>
-  <nav class="hero-project-index hero-summary" aria-label="精选项目索引">
-    ${site.projects.map((project, index) => `<a href="#work-${index}"><span class="hero-project-number">${number(index + 1)}</span><strong>${escape(project.name)}</strong><small>${escape(project.code)}</small><span class="hero-project-arrow" aria-hidden="true">↗</span></a>`).join('')}
-  </nav>
+  <div class="deck-bottom"><span>01 / INDEX</span><p>记录，构建，持续前行。</p><a href="#projects">向下探索 <span aria-hidden="true">↓</span></a></div>
 </section>
 <section class="stage works-stage paper-section" id="projects" aria-labelledby="works-title">
-  <header class="section-heading reveal"><div><p class="section-label"><span>01 / 项目档案</span><small>PROJECT ARCHIVE</small></p><h2 id="works-title" class="section-title" aria-label="项目档案 / Selected Works">SELECTED<br>WORKS</h2></div><p>一些想法，已经有了形状。<br>关于代码、设计，<br>和持续发生的探索。<small>BUILT FROM CURIOSITY.<br>KEPT FOR THE NEXT QUESTION.</small></p></header>
+  <header class="section-heading reveal"><div><p class="section-label"><span>01 / 项目档案</span><small>PROJECT ARCHIVE</small></p><h2 id="works-title" class="section-title" aria-label="项目档案 / Selected Works">PROJECT<br>ARCHIVE</h2></div><p>一些想法，已经有了形状。<br>关于代码、设计，<br>和持续发生的探索。<small>BUILT FROM CURIOSITY.<br>KEPT FOR THE NEXT QUESTION.</small></p></header>
   <div class="work-layout"><div class="work-directory"><nav class="project-tabs" aria-label="选择项目">${site.projects.map((project, index) => `<a href="#work-${index}" data-project="work-${index}"><span class="tab-index">${number(index + 1)}</span><span><b>${escape(project.name)}</b><small>${escape(project.code)}</small></span><span class="tab-arrow" aria-hidden="true">↗</span></a>`).join('')}</nav><a class="quiet-link all-projects" href="${github}?tab=repositories">全部公开项目 ${arrow}</a></div><div class="project-stage">${projects || '<p class="empty-state">项目正在整理中。</p>'}</div></div>
   <div class="stage-footer"><span>CODE / DESIGN / OPEN SOURCE</span><span>${number(site.projects.length)} PROJECTS</span></div>
 </section>
 <section class="stage journal-stage" id="journal" aria-labelledby="journal-title">
-  <div class="notes-heading reveal"><p class="section-label"><span>02 / 探索手记</span><small>FIELD NOTES</small></p><h2 id="journal-title" class="section-title">NOTES<br>IN PROGRESS</h2><p>把问题、发现与理解，<br>留给下一次探索。</p><a class="quiet-link" href="./blog/index.html">全部手记 ${arrow}</a></div>
+  <div class="notes-heading reveal"><p class="section-label"><span>02 / 探索手记</span><small>FIELD NOTES</small></p><h2 id="journal-title" class="section-title">FIELD<br>NOTES</h2><p>把问题、发现与理解，<br>留给下一次探索。</p><a class="quiet-link" href="./blog/index.html">全部手记 ${arrow}</a></div>
   <div class="journal-feed"><div class="feed-topline"><span>LATEST ENTRIES</span><span>${number(posts.length)} RECORDS</span></div>${postList(posts.slice(0, 3), './blog/')}<p class="feed-end">记录仍在继续。<span aria-hidden="true">—</span></p></div>
 </section>
 <section class="stage profile-stage paper-section" id="profile" aria-labelledby="profile-title">
-  <div class="profile-intro reveal"><p class="section-label"><span>03 / 关于我</span><small>THE PERSON BEHIND</small></p><h2 id="profile-title">保持好奇。<br>继续探索。</h2><p>${escape(site.bio)}</p><p class="profile-aside">代码之外，也有音乐和生活。</p><a class="action-link" href="${github}"><span>在 GitHub 找到我<small>${escape(site.handle)}</small></span>${arrow}</a></div>
+  <div class="profile-intro reveal"><p class="section-label"><span>03 / 关于我</span><small>OPERATOR / THEATER</small></p><h2 id="profile-title">保持好奇。<br>继续探索。</h2><p>${escape(site.bio)}</p><p class="profile-aside">代码之外，也有音乐和生活。</p><a class="action-link" href="${github}"><span>在 GitHub 找到我<small>${escape(site.handle)}</small></span>${arrow}</a></div>
   <div class="profile-dossier reveal"><div class="dossier-heading"><span>PERSONAL ARCHIVE</span><b>THEATER</b></div><div class="profile-image"><img src="./${escape(site.avatar)}" width="240" height="240" loading="lazy" alt="${escape(site.name)} 的头像"></div><dl><div><dt>NAME / 名称</dt><dd>${escape(site.name)}</dd></div><div><dt>LEARNING / 正在学习</dt><dd>BUPT · 计算机</dd></div><div><dt>EXPLORING / 探索方向</dt><dd>代码 · 设计 · AI</dd></div></dl><p class="dossier-caption">${escape(site.tagline)}</p></div>
 </section>`;
 

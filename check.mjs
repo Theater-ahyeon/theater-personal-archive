@@ -35,3 +35,16 @@ for (const page of pages.filter(page => !page.startsWith('assets/'))) {
   assert.match(html, /assets\/soundtrack\.js\?v=/, `${page}: soundtrack cache version`);
 }
 console.log('PASS: progressive music controls and opening phase labels on every archive page.');
+const home = readFileSync(resolve(root, 'index.html'), 'utf8');
+assert.match(home, /class="stage hero command-deck"/);
+assert.match(home, /id="hero-instrument"/);
+assert.match(home, /type="module" src="\.\/assets\/cinematic-integration\.js\?v=/);
+assert(!/src="[^\"]*archive-v10\.js/.test(home), 'homepage has one cinematic animation owner');
+assert.match(home, /assets\/reconstruction\.css\?v=/);
+for (const file of ['cinematic-integration.js', 'motion-study/depth-field.js']) {
+  const source = readFileSync(resolve(root, 'assets', file), 'utf8');
+  for (const [, path] of source.matchAll(/from ['"]([^'"]+)['"]/g)) {
+    assert(existsSync(resolve(root, 'assets', file, '..', path)), `missing cinematic module ${path}`);
+  }
+}
+console.log('PASS: real homepage uses integrated study geometry and one cinematic owner.');
